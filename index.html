@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ Mystic Zodiac × MBTI ｜ 占星命運神殿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cinzel+Decorative:wght@700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1F3B;
+    --ink-deep:#12142b;
+    --gold:#D4AF37;
+    --gold-soft:#e8cf7e;
+    --ivory:#F7F3E9;
+    --ivory-shadow:#e6ddc4;
+    --wine:#6b2b3a;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+    background:
+      radial-gradient(ellipse at 20% 0%, #262b52 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 15%, #2a2050 0%, transparent 50%),
+      linear-gradient(180deg, var(--ink-deep) 0%, var(--ink) 45%, #0e1024 100%);
+    color:var(--ivory);
+    font-family:"Noto Serif TC", serif;
+    overflow-x:hidden;
+  }
+
+  /* ---------- starfield ---------- */
+  #stars, #stars2, #stars3{
+    position:fixed; inset:0; width:100%; height:100%;
+    pointer-events:none; z-index:0;
+  }
+
+  /* ---------- floating magic particles ---------- */
+  .particle{
+    position:fixed;
+    width:3px; height:3px;
+    background:var(--gold-soft);
+    border-radius:50%;
+    box-shadow:0 0 6px 2px rgba(212,175,55,0.7);
+    animation:float-up linear infinite;
+    pointer-events:none;
+    z-index:1;
+    opacity:0;
+  }
+  @keyframes float-up{
+    0%{ transform:translateY(0) translateX(0); opacity:0;}
+    10%{ opacity:0.9;}
+    90%{ opacity:0.5;}
+    100%{ transform:translateY(-110vh) translateX(20px); opacity:0;}
+  }
+
+  /* ---------- layout ---------- */
+  .wrap{
+    position:relative;
+    z-index:2;
+    max-width:760px;
+    margin:0 auto;
+    padding:56px 20px 100px;
+  }
+
+  /* ---------- sigil / astrolabe (signature element) ---------- */
+  .sigil{
+    position:relative;
+    width:150px; height:150px;
+    margin:0 auto 18px;
+  }
+  .sigil svg{ width:100%; height:100%; }
+  .sigil .ring-outer{
+    animation:spin 60s linear infinite;
+    transform-origin:75px 75px;
+  }
+  .sigil .ring-inner{
+    animation:spin-rev 40s linear infinite;
+    transform-origin:75px 75px;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+  @keyframes spin-rev{ to{ transform:rotate(-360deg);} }
+
+  /* ---------- header ---------- */
+  h1.title{
+    font-family:"Cinzel Decorative", "Cinzel", serif;
+    text-align:center;
+    font-size:clamp(28px, 5vw, 42px);
+    letter-spacing:2px;
+    margin:0 0 6px;
+    color:var(--gold-soft);
+    text-shadow:0 0 18px rgba(212,175,55,0.45), 0 0 2px rgba(0,0,0,0.6);
+  }
+  p.subtitle{
+    text-align:center;
+    font-family:"Cinzel", serif;
+    font-size:13px;
+    letter-spacing:4px;
+    color:#b9b6d6;
+    margin:0 0 44px;
+    text-transform:uppercase;
+  }
+
+  /* ---------- selection panel ---------- */
+  .altar{
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border:1px solid rgba(212,175,55,0.35);
+    border-radius:18px;
+    padding:32px 28px;
+    backdrop-filter:blur(2px);
+    box-shadow:0 0 0 1px rgba(0,0,0,0.2) inset, 0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+
+  .field{
+    margin-bottom:20px;
+  }
+  .field label{
+    display:block;
+    font-family:"Cinzel", serif;
+    font-size:12px;
+    letter-spacing:3px;
+    color:var(--gold-soft);
+    margin-bottom:8px;
+    text-transform:uppercase;
+  }
+  .select-shell{
+    position:relative;
+  }
+  select{
+    width:100%;
+    appearance:none;
+    -webkit-appearance:none;
+    background:rgba(9,10,26,0.55);
+    border:1px solid rgba(212,175,55,0.5);
+    color:var(--ivory);
+    font-family:"Noto Serif TC", serif;
+    font-size:16px;
+    padding:13px 42px 13px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:border-color .25s, box-shadow .25s;
+  }
+  select:hover, select:focus{
+    outline:none;
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(212,175,55,0.15);
+  }
+  select option{ background:#1B1F3B; color:var(--ivory); }
+  .select-shell::after{
+    content:"▾";
+    position:absolute;
+    right:16px; top:50%;
+    transform:translateY(-50%);
+    color:var(--gold);
+    pointer-events:none;
+    font-size:14px;
+  }
+
+  .cast-btn{
+    display:block;
+    width:100%;
+    margin-top:8px;
+    padding:16px 20px;
+    font-family:"Cinzel", serif;
+    font-size:16px;
+    letter-spacing:2px;
+    font-weight:600;
+    color:var(--ink);
+    background:linear-gradient(180deg, var(--gold-soft), var(--gold));
+    border:1px solid #a5822a;
+    border-radius:999px;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    transition:transform .18s ease, box-shadow .25s ease;
+    box-shadow:0 8px 24px -8px rgba(212,175,55,0.55);
+  }
+  .cast-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 0 1px rgba(212,175,55,0.6), 0 0 30px 4px rgba(212,175,55,0.55);
+  }
+  .cast-btn:active{ transform:translateY(0); }
+  .cast-btn:disabled{
+    opacity:0.6; cursor:not-allowed; transform:none;
+    box-shadow:none;
+  }
+
+  .hint{
+    text-align:center;
+    margin-top:14px;
+    font-size:13px;
+    color:#9d9ac0;
+    min-height:18px;
+  }
+
+  /* ---------- result area ---------- */
+  #result{
+    margin-top:46px;
+  }
+  .result-heading{
+    text-align:center;
+    font-family:"Cinzel", serif;
+    font-size:13px;
+    letter-spacing:5px;
+    color:var(--gold-soft);
+    text-transform:uppercase;
+    margin-bottom:22px;
+    opacity:0;
+  }
+  .result-heading.show{ opacity:1; transition:opacity .6s ease .1s; }
+
+  .card{
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.5), transparent 40%),
+      linear-gradient(180deg, var(--ivory), var(--ivory-shadow));
+    color:#2a2416;
+    border-radius:14px;
+    padding:26px 26px 24px;
+    margin-bottom:16px;
+    box-shadow:0 18px 34px -16px rgba(0,0,0,0.55), 0 0 0 1px rgba(212,175,55,0.25);
+    position:relative;
+    opacity:0;
+    transform:translateY(16px) scaleY(0.96);
+    transform-origin:top center;
+    transition:opacity .55s ease, transform .55s cubic-bezier(.2,.8,.3,1);
+  }
+  .card.show{ opacity:1; transform:translateY(0) scaleY(1); }
+  .card::before{
+    content:"";
+    position:absolute; left:14px; right:14px; top:8px; bottom:8px;
+    border:1px solid rgba(107,43,58,0.15);
+    border-radius:8px;
+    pointer-events:none;
+  }
+  .card h3{
+    font-family:"Cinzel", serif;
+    font-size:13px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color:var(--wine);
+    margin:0 0 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card h3 .glyph{ font-size:18px; }
+  .card p{ margin:0 0 8px; line-height:1.85; font-size:15.5px; }
+  .card p:last-child{ margin-bottom:0; }
+  .card .name-line{
+    font-family:"Cinzel", serif;
+    font-weight:600;
+    font-size:19px;
+    color:#3a2f1a;
+    margin-bottom:6px;
+  }
+  .card ul{ margin:6px 0 0; padding-left:20px; line-height:1.9; }
+  .card.title-card{
+    text-align:center;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(212,175,55,0.18), transparent 60%),
+      linear-gradient(180deg, var(--ivory), var(--ivory-shadow));
+  }
+  .card.title-card .epithet{
+    font-family:"Cinzel Decorative","Cinzel", serif;
+    font-size:22px;
+    color:var(--wine);
+    letter-spacing:1px;
+  }
+  .duo{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  @media (max-width:560px){
+    .duo{ grid-template-columns:1fr; }
+  }
+
+  footer{
+    text-align:center;
+    margin-top:52px;
+    font-size:12px;
+    letter-spacing:2px;
+    color:#7a77a0;
+  }
+
+  .sr-only{
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div id="particles"></div>
+
+<div class="wrap">
+
+  <div class="sigil" aria-hidden="true">
+    <svg viewBox="0 0 150 150">
+      <g class="ring-outer">
+        <circle cx="75" cy="75" r="70" fill="none" stroke="#D4AF37" stroke-opacity="0.55" stroke-width="1"/>
+        <g fill="#D4AF37" fill-opacity="0.85" font-family="serif" font-size="11" text-anchor="middle">
+          <text x="75" y="10">♈</text><text x="118" y="22">♉</text><text x="140" y="55">♊</text>
+          <text x="140" y="98">♋</text><text x="118" y="131">♌</text><text x="75" y="145">♍</text>
+          <text x="32" y="131">♎</text><text x="10" y="98">♏</text><text x="10" y="55">♐</text>
+          <text x="32" y="22">♑</text><text x="53" y="14">♒</text><text x="97" y="14">♓</text>
+        </g>
+      </g>
+      <g class="ring-inner">
+        <circle cx="75" cy="75" r="46" fill="none" stroke="#D4AF37" stroke-opacity="0.4" stroke-width="1"/>
+        <path d="M75 29 L75 121 M29 75 L121 75 M42 42 L108 108 M108 42 L42 108"
+              stroke="#D4AF37" stroke-opacity="0.25" stroke-width="1"/>
+      </g>
+      <circle cx="75" cy="75" r="6" fill="#D4AF37" fill-opacity="0.85"/>
+    </svg>
+  </div>
+
+  <h1 class="title">✨ Mystic Zodiac ✨</h1>
+  <p class="subtitle">星座 × MBTI ｜ 命運人格神諭</p>
+
+  <div class="altar">
+    <div class="field">
+      <label for="zodiac">選擇你的星座</label>
+      <div class="select-shell">
+        <select id="zodiac">
+          <option value="">請選擇星座 ▾</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="mbti">選擇你的 MBTI</label>
+      <div class="select-shell">
+        <select id="mbti">
+          <option value="">請選擇 MBTI ▾</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="cast-btn" id="castBtn">🔮 查看命運人格</button>
+    <div class="hint" id="hint" role="status" aria-live="polite"></div>
+  </div>
+
+  <div id="result">
+    <p class="result-heading" id="resultHeading">— 命 運 結 果 —</p>
+
+    <div class="duo">
+      <div class="card" id="cardZodiac">
+        <h3><span class="glyph" id="zodiacGlyph">♈</span>星座</h3>
+        <div class="name-line" id="zodiacName">—</div>
+        <p id="zodiacTrait">—</p>
+      </div>
+      <div class="card" id="cardMbti">
+        <h3><span class="glyph">🧠</span>MBTI</h3>
+        <div class="name-line" id="mbtiName">—</div>
+        <p id="mbtiTrait">—</p>
+      </div>
+    </div>
+
+    <div class="card" id="cardFusion">
+      <h3><span class="glyph">🜂</span>命運融合人格</h3>
+      <p id="fusionText">—</p>
+      <ul id="fusionSkills"></ul>
+    </div>
+
+    <div class="duo">
+      <div class="card" id="cardLove">
+        <h3><span class="glyph">♥</span>愛情</h3>
+        <p id="loveText1">—</p>
+        <p id="loveText2">—</p>
+      </div>
+      <div class="card" id="cardCareer">
+        <h3><span class="glyph">⚔</span>適合職業</h3>
+        <ul id="careerList"></ul>
+      </div>
+    </div>
+
+    <div class="card title-card" id="cardTitle">
+      <h3 style="justify-content:center;"><span class="glyph">✦</span>魔幻稱號<span class="glyph">✦</span></h3>
+      <div class="epithet" id="epithetText">—</div>
+    </div>
+  </div>
+
+  <footer>沉浸於占星神殿，聆聽命運的低語</footer>
+</div>
+
+<script>
+/* ===================== 資料 ===================== */
+const zodiacData = {
+  aries:      { symbol:"♈", name:"牡羊座", trait:"熱情、勇敢、衝勁十足，行動力驚人。", skills:["果敢行動","開創新局"], love:"愛得直接熱烈，追求速戰速決的浪漫。", careers:["先鋒","開拓者"], epithet:"烈焰之角" },
+  taurus:     { symbol:"♉", name:"金牛座", trait:"務實、堅定、重視安全感與生活品質。", skills:["穩紮穩打","堅守目標"], love:"忠誠穩重，愛情裡追求長久的安定。", careers:["守護者","經營者"], epithet:"翠玉大地" },
+  gemini:     { symbol:"♊", name:"雙子座", trait:"機智、好奇、語言天賦出眾。", skills:["靈活應變","訊息整合"], love:"喜歡新鮮感，需要心智上的共鳴。", careers:["使者","說書人"], epithet:"疾風之語" },
+  cancer:     { symbol:"♋", name:"巨蟹座", trait:"重情、直覺敏銳、守護慾強。", skills:["洞察情感","守護他人"], love:"渴望歸屬感，會用心經營情感堡壘。", careers:["治癒者","守夜人"], epithet:"月光潮汐" },
+  leo:        { symbol:"♌", name:"獅子座", trait:"自信、慷慨、天生的領袖氣質。", skills:["鼓舞人心","展現魅力"], love:"熱烈忠誠，享受被崇拜也懂得付出。", careers:["統帥","表演者"], epithet:"金獅榮光" },
+  virgo:      { symbol:"♍", name:"處女座", trait:"細膩、理性、追求完美與秩序。", skills:["精密分析","追求完美"], love:"謹慎務實，習慣用行動證明而非空言。", careers:["匠師","鑑定者"], epithet:"秩序織錦" },
+  libra:      { symbol:"♎", name:"天秤座", trait:"優雅、重視和諧、善於權衡取捨。", skills:["權衡取捨","營造和諧"], love:"渴望平等浪漫的關係，厭惡衝突。", careers:["調停者","美學家"], epithet:"天秤星輝" },
+  scorpio:    { symbol:"♏", name:"天蠍座", trait:"神秘、直覺強、意志力高。", skills:["洞察人心","深謀遠慮"], love:"忠誠度高，不容易相信人，一旦認定便非常專情。", careers:["軍師","調查者"], epithet:"暗夜星辰" },
+  sagittarius:{ symbol:"♐", name:"射手座", trait:"自由、樂觀、熱愛冒險與真理。", skills:["拓展視野","追尋真理"], love:"渴望自由與成長空間，坦率直接。", careers:["遊俠","探索者"], epithet:"遠征星圖" },
+  capricorn:  { symbol:"♑", name:"摩羯座", trait:"堅毅、務實、目標導向極強。", skills:["長期規劃","穩健執行"], love:"低調深沉，習慣用長期承諾表達愛意。", careers:["築城者","統籌者"], epithet:"高塔基石" },
+  aquarius:   { symbol:"♒", name:"水瓶座", trait:"獨立、創新、思想前衛。", skills:["創新思考","獨立判斷"], love:"重視精神獨立，渴望特別而非傳統的連結。", careers:["發明家","異見者"], epithet:"未來星圖" },
+  pisces:     { symbol:"♓", name:"雙魚座", trait:"浪漫、共感力強、想像力豐富。", skills:["感知共鳴","天馬行空"], love:"感性投入，容易與伴侶靈魂共鳴。", careers:["夢行者","藝術家"], epithet:"幻夢潮汐" },
+};
+
+const mbtiData = {
+  INTJ:{ title:"建築師", trait:"策略家、善於規劃、理性。", skills:["長期規劃","冷靜分析"], love:"不輕易付出感情，一旦認定便深謀遠慮地經營關係。", careers:["軍師","研究員","工程師","作家"], epithet:"賢者" },
+  INTP:{ title:"邏輯學家", trait:"好奇、分析力強、追求真理。", skills:["邏輯推演","探究本質"], love:"需要智識上的碰撞，習慣用理解代替甜言蜜語。", careers:["研究員","理論家","程式設計師","發明家"], epithet:"哲人" },
+  ENTJ:{ title:"指揮官", trait:"果斷、有野心、天生的統帥。", skills:["統籌大局","果斷決策"], love:"主導型戀人，會為關係設立明確的目標與方向。", careers:["統帥","企業家","策略顧問","談判者"], epithet:"王者" },
+  ENTP:{ title:"辯論家", trait:"機敏、愛挑戰、點子源源不絕。", skills:["腦力激盪","打破框架"], love:"用言語與創意撩動人心，厭倦一成不變。", careers:["發明家","評論家","創業者","說書人"], epithet:"詭辯師" },
+  INFJ:{ title:"提倡者", trait:"理想主義、洞察人心、內斂堅定。", skills:["洞悉人性","堅守理想"], love:"深情而含蓄，渴望靈魂層次的深刻連結。", careers:["顧問","作家","治癒者","教育者"], epithet:"先知" },
+  INFP:{ title:"調停者", trait:"浪漫、重視價值觀、內心世界豐富。", skills:["感受細膩","堅持價值"], love:"全心投入的理想主義者，尋找命定般的靈魂伴侶。", careers:["藝術家","作家","諮商師","夢行者"], epithet:"詩人" },
+  ENFJ:{ title:"主人公", trait:"感召力強、關懷他人、天生的引路人。", skills:["凝聚人心","引導方向"], love:"無私付出型戀人，總把伴侶的幸福放在心上。", careers:["導師","演說家","治癒者","領袖"], epithet:"引路人" },
+  ENFP:{ title:"競選者", trait:"熱情、創意無限、渴望自由。", skills:["點燃熱情","發散創意"], love:"用滿溢的熱情感染伴侶，享受浪漫的未知。", careers:["表演者","創作者","公關","冒險家"], epithet:"吟遊者" },
+  ISTJ:{ title:"物流師", trait:"務實、可靠、堅守原則。", skills:["嚴守紀律","落實承諾"], love:"習慣用行動與承諾表達愛意，忠誠而穩重。", careers:["守護者","管理者","法務","工程師"], epithet:"守則者" },
+  ISFJ:{ title:"守衛者", trait:"體貼、盡責、默默守護所愛之人。", skills:["默默守護","照顧細節"], love:"細心體貼，用日常的付出築起安全感。", careers:["治癒者","照護者","管理員","教育者"], epithet:"守夜人" },
+  ESTJ:{ title:"總經理", trait:"組織力強、務實高效、天生的執行者。", skills:["組織資源","高效執行"], love:"直接務實，習慣用清楚的承諾與計畫經營關係。", careers:["統籌者","經營者","法官","指揮官"], epithet:"執政官" },
+  ESFJ:{ title:"執政官", trait:"熱心、重視和諧、擅長經營人際。", skills:["維繫關係","營造氛圍"], love:"重視儀式感，用心維繫親密關係中的每個細節。", careers:["主持人","協調者","照護者","活動策劃"], epithet:"宴會主" },
+  ISTP:{ title:"鑑賞家", trait:"冷靜、動手能力強、享受自由。", skills:["動手實作","臨場應變"], love:"低調而獨立，習慣用實際行動而非言語證明。", careers:["工匠","技師","探勘者","飛行員"], epithet:"匠人" },
+  ISFP:{ title:"探險家", trait:"溫柔、審美獨到、活在當下。", skills:["審美感知","活在當下"], love:"溫柔隨性，用細膩的感受力靠近伴侶的內心。", careers:["藝術家","設計師","調香師","旅人"], epithet:"遊吟者" },
+  ESTP:{ title:"企業家", trait:"大膽、行動派、享受當下的刺激。", skills:["當機立斷","掌握節奏"], love:"熱烈直接，喜歡在互動中製造心跳的瞬間。", careers:["冒險家","業務","運動員","談判者"], epithet:"鬥士" },
+  ESFP:{ title:"表演者", trait:"活潑、感染力強、熱愛舞台與生活。", skills:["感染氣氛","擁抱當下"], love:"熱情外放，把每一段關係都活成一場慶典。", careers:["表演者","主持人","活動策劃","旅行家"], epithet:"舞者" },
+};
+
+/* ===================== 初始化下拉選單 ===================== */
+const zodiacSelect = document.getElementById("zodiac");
+const mbtiSelect = document.getElementById("mbti");
+
+Object.entries(zodiacData).forEach(([key, z])=>{
+  const opt = document.createElement("option");
+  opt.value = key;
+  opt.textContent = `${z.symbol} ${z.name}`;
+  zodiacSelect.appendChild(opt);
+});
+
+Object.keys(mbtiData).forEach(key=>{
+  const opt = document.createElement("option");
+  opt.value = key;
+  opt.textContent = `${key}｜${mbtiData[key].title}`;
+  mbtiSelect.appendChild(opt);
+});
+
+/* ===================== 星空背景 ===================== */
+function makeStars(id, count, sizeRange, opacityRange, durRange){
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  const stars = Array.from({length:count}).map(()=>({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: sizeRange[0] + Math.random()*(sizeRange[1]-sizeRange[0]),
+    baseOpacity: opacityRange[0] + Math.random()*(opacityRange[1]-opacityRange[0]),
+    phase: Math.random()*Math.PI*2,
+    speed: (durRange[0] + Math.random()*(durRange[1]-durRange[0]))
+  }));
+
+  function draw(t){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(s=>{
+      const twinkle = 0.55 + 0.45*Math.sin(t/1000*s.speed + s.phase);
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(247,243,233,${(s.baseOpacity*twinkle).toFixed(3)})`;
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+makeStars("stars", 160, [0.5,1.6], [0.3,0.9], [0.3,1]);
+
+/* ===================== 漂浮魔法粒子 ===================== */
+const particleHost = document.getElementById("particles");
+function spawnParticle(){
+  const p = document.createElement("div");
+  p.className = "particle";
+  const left = Math.random()*100;
+  const duration = 8 + Math.random()*10;
+  const delay = Math.random()*2;
+  const size = 2 + Math.random()*2;
+  p.style.left = left + "vw";
+  p.style.bottom = "-10px";
+  p.style.width = size + "px";
+  p.style.height = size + "px";
+  p.style.animationDuration = duration + "s";
+  p.style.animationDelay = delay + "s";
+  particleHost.appendChild(p);
+  setTimeout(()=> p.remove(), (duration+delay)*1000 + 500);
+}
+setInterval(spawnParticle, 500);
+for(let i=0;i<10;i++) setTimeout(spawnParticle, i*300);
+
+/* ===================== 命運生成邏輯 ===================== */
+const castBtn = document.getElementById("castBtn");
+const hint = document.getElementById("hint");
+
+const cards = [
+  document.getElementById("cardZodiac"),
+  document.getElementById("cardMbti"),
+  document.getElementById("cardFusion"),
+  document.getElementById("cardLove"),
+  document.getElementById("cardCareer"),
+  document.getElementById("cardTitle"),
+];
+const resultHeading = document.getElementById("resultHeading");
+
+function uniqueMerge(...lists){
+  const out = [];
+  lists.flat().forEach(item=>{
+    if(!out.includes(item)) out.push(item);
+  });
+  return out;
+}
+
+function revealResult(){
+  resultHeading.classList.add("show");
+  cards.forEach((card, i)=>{
+    card.classList.remove("show");
+    // force reflow then stagger
+    void card.offsetWidth;
+    setTimeout(()=> card.classList.add("show"), 90 + i*90);
+  });
+}
+
+castBtn.addEventListener("click", ()=>{
+  const zKey = zodiacSelect.value;
+  const mKey = mbtiSelect.value;
+
+  if(!zKey || !mKey){
+    hint.textContent = "請先選擇你的星座與 MBTI，命運才能為你揭曉。";
+    return;
+  }
+  hint.textContent = "";
+
+  const z = zodiacData[zKey];
+  const m = mbtiData[mKey];
+
+  // 星座卡
+  document.getElementById("zodiacGlyph").textContent = z.symbol;
+  document.getElementById("zodiacName").textContent = z.name;
+  document.getElementById("zodiacTrait").textContent = z.trait;
+
+  // MBTI 卡
+  document.getElementById("mbtiName").textContent = `${mKey}｜${m.title}`;
+  document.getElementById("mbtiTrait").textContent = m.trait;
+
+  // 融合人格
+  document.getElementById("fusionText").textContent =
+    `你是一位如「${z.epithet}」般的${m.title}。${z.trait}與${m.trait}相互交織，讓你在人群之中，既有${z.name}的直覺，也有${mKey}的理性架構，形成獨一無二的命運人格。`;
+
+  const skills = uniqueMerge(z.skills, m.skills).slice(0,4);
+  const skillsUl = document.getElementById("fusionSkills");
+  skillsUl.innerHTML = "";
+  skills.forEach(s=>{
+    const li = document.createElement("li");
+    li.textContent = s;
+    skillsUl.appendChild(li);
+  });
+
+  // 愛情
+  document.getElementById("loveText1").textContent = z.love;
+  document.getElementById("loveText2").textContent = m.love;
+
+  // 職業
+  const careers = uniqueMerge(m.careers, z.careers).slice(0,4);
+  const careerUl = document.getElementById("careerList");
+  careerUl.innerHTML = "";
+  careers.forEach(c=>{
+    const li = document.createElement("li");
+    li.textContent = c;
+    careerUl.appendChild(li);
+  });
+
+  // 魔幻稱號
+  document.getElementById("epithetText").textContent = `「${z.epithet}的${m.epithet}」`;
+
+  revealResult();
+
+  document.getElementById("result").scrollIntoView({behavior:"smooth", block:"start"});
+});
+</script>
+</body>
+</html>
